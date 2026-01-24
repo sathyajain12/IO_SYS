@@ -216,7 +216,7 @@ function AdminPortal() {
                                             {entry.outward && entry.outward.length > 0 ? (
                                                 entry.outward.map(out => (
                                                     <div key={out.id} className="text-sm text-primary">
-                                                        <strong>{out.outward_no}</strong>
+                                                        <strong>{out.outwardNo}</strong>
                                                     </div>
                                                 ))
                                             ) : (
