@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
     try {
         const { data, error } = await req.supabase
             .from('inward')
-            .select('*, outward:outward!fk_inward_relation(*)')
+            .select('*')
             .order('id', { ascending: false });
 
         if (error) throw error;
@@ -17,7 +17,6 @@ router.get('/', async (req, res) => {
         const entries = toCamelCase(data);
         res.json({ success: true, entries });
     } catch (error) {
-        console.error('SUPABASE ERROR:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -27,7 +26,7 @@ router.get('/:id', async (req, res) => {
     try {
         const { data, error } = await req.supabase
             .from('inward')
-            .select('*, outward:outward!fk_inward_relation(*)')
+            .select('*')
             .eq('id', req.params.id)
             .single();
 

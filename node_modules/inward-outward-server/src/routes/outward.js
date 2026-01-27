@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
         const { team } = req.query;
         let query = req.supabase
             .from('outward')
-            .select('*, inward:inward!fk_inward_relation(*)')
+            .select('*')
             .order('id', { ascending: false });
 
         if (team) {

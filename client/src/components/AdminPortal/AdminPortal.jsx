@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { inwardAPI } from '../../services/api';
-import { Inbox, XCircle, Plus, ClipboardList, Check, X } from 'lucide-react';
+import { Inbox, XCirlce, Plus, ClipboardList, Check, X } from 'lucide-react';
 import './AdminPortal.css';
 
 function AdminPortal() {
@@ -196,7 +196,6 @@ function AdminPortal() {
                                     <th>Subject</th>
                                     <th>From</th>
                                     <th>Assigned Team</th>
-                                    <th>Linked Outward</th>
                                     <th>Status</th>
                                     <th>Due Date</th>
                                 </tr>
@@ -213,22 +212,11 @@ function AdminPortal() {
                                             )}
                                         </td>
                                         <td>
-                                            {entry.outward && entry.outward.length > 0 ? (
-                                                entry.outward.map(out => (
-                                                    <div key={out.id} className="text-sm text-primary">
-                                                        <strong>{out.outwardNo}</strong>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <span className="text-muted">-</span>
-                                            )}
-                                        </td>
-                                        <td>
                                             <span className={`badge badge-${entry.assignmentStatus?.toLowerCase() || 'pending'}`}>
                                                 {entry.assignmentStatus || 'Unassigned'}
                                             </span>
                                         </td>
-                                        <td>{entry.dueDate ? new Date(entry.dueDate).toLocaleDateString() : '-'}</td>
+                                        <td>{entry.dueDate ? new Date(entry.dueDate._seconds * 1000).toLocaleDateString() : '-'}</td>
                                     </tr>
                                 ))}
                             </tbody>
