@@ -29,7 +29,6 @@ function AdminPortal() {
         means: '',
         particularsFromWhom: '',
         subject: '',
-        assignedTo: '',
         signReceiptDateTime: '',
         assignedTeam: '',
         assignedToEmail: '',
@@ -118,7 +117,7 @@ function AdminPortal() {
 
     const resetForm = () => {
         setFormData({
-            means: '', particularsFromWhom: '', subject: '', assignedTo: '',
+            means: '', particularsFromWhom: '', subject: '',
             signReceiptDateTime: '', assignedTeam: '', assignedToEmail: '',
             assignmentInstructions: '', dueDate: ''
         });
@@ -317,20 +316,13 @@ function AdminPortal() {
                                 placeholder="Brief description of the correspondence" />
                         </div>
 
-                        <div className="form-group">
-                            <label className="form-label">Assigned to (Person) *</label>
-                            <input type="text" name="assignedTo" className="form-input"
-                                value={formData.assignedTo} onChange={handleChange} required
-                                placeholder="Person responsible" />
-                        </div>
-
                         <hr className="divider" />
-                        <h4 className="section-title"><ClipboardList size={20} /> Team Assignment (Optional)</h4>
+                        <h4 className="section-title"><ClipboardList size={20} /> Team Assignment</h4>
 
                         <div className="grid-2">
                             <div className="form-group">
-                                <label className="form-label">Assign to Team</label>
-                                <select name="assignedTeam" className="form-select" value={formData.assignedTeam} onChange={handleChange}>
+                                <label className="form-label">Assign to Team *</label>
+                                <select name="assignedTeam" className="form-select" value={formData.assignedTeam} onChange={handleChange} required>
                                     <option value="">Select Team...</option>
                                     <option value="UG">UG Team</option>
                                     <option value="PG/PRO">PG/PRO Team</option>
@@ -338,9 +330,9 @@ function AdminPortal() {
                                 </select>
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Team Leader Email</label>
+                                <label className="form-label">Team Leader Email *</label>
                                 <input type="email" name="assignedToEmail" className="form-input"
-                                    value={formData.assignedToEmail} onChange={handleChange}
+                                    value={formData.assignedToEmail} onChange={handleChange} required
                                     placeholder="Auto-filled based on team" />
                             </div>
                         </div>
@@ -488,10 +480,6 @@ function AdminPortal() {
                                 <div className="detail-item">
                                     <label>Received</label>
                                     <span>{formatDate(selectedEntry.signReceiptDateTime)}</span>
-                                </div>
-                                <div className="detail-item">
-                                    <label>Assigned To</label>
-                                    <span>{selectedEntry.assignedTo || '-'}</span>
                                 </div>
                                 {selectedEntry.assignedTeam && (
                                     <>
