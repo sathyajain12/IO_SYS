@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from "jwt-decode";
+import { useGoogleLogin } from '@react-oauth/google';
 import { LayoutDashboard, FileText, Send, Moon, Sun, Menu, X, Home, Lock } from 'lucide-react';
 import Particles from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
@@ -26,45 +25,60 @@ function NavLink({ to, icon: Icon, children }) {
 function AdminLogin({ onLogin }) {
   const [error, setError] = useState('');
 
-  const handleSuccess = (credentialResponse) => {
-    try {
-      const decoded = jwtDecode(credentialResponse.credential);
-      console.log('Login Success:', decoded);
+  const login = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        // Fetch user info using the access token
+        const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: {
+            Authorization: `Bearer ${tokenResponse.access_token}`,
+          },
+        });
+        const userInfo = await response.json();
+        console.log('Login Success:', userInfo);
 
-      // Basic Whitelist Check (Optional)
-      const allowedEmails = ['sathyajain9@gmail.com', 'saisathyajain@sssihl.edu.in', 'results@sssihl.edu.in'];
+        // Basic Whitelist Check (Optional)
+        const allowedEmails = ['sathyajain9@gmail.com', 'saisathyajain@sssihl.edu.in', 'results@sssihl.edu.in'];
 
-      // Allow specific emails OR any email from your organization domain if needed
-      if (allowedEmails.includes(decoded.email) || decoded.email.endsWith('@sssihl.edu.in')) {
-        onLogin(decoded);
-      } else {
-        setError('Access Denied: Unrestricted Email');
+        // Allow specific emails OR any email from your organization domain if needed
+        if (allowedEmails.includes(userInfo.email) || userInfo.email.endsWith('@sssihl.edu.in')) {
+          onLogin(userInfo);
+        } else {
+          setError('Access Denied: Unrestricted Email');
+        }
+      } catch (err) {
+        console.error('Login verify error:', err);
+        setError('Login verification failed');
       }
-    } catch (err) {
-      console.error('Login verify error:', err);
-      setError('Login verification failed');
-    }
-  };
+    },
+    onError: () => setError('Login Failed'),
+  });
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-      <div className="card" style={{ maxWidth: '400px', width: '100%', textAlign: 'center', padding: '3rem 2rem' }}>
-        <div style={{ marginBottom: '1.5rem', color: 'var(--primary)' }}>
+    <div className="admin-login-container">
+      <div className="card admin-login-card">
+        <div className="admin-login-icon">
           <Lock size={48} />
         </div>
-        <h2 style={{ marginBottom: '0.5rem' }}>Admin Access</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Sign in to manage entries</p>
+        <h2 className="admin-login-title">Admin Access</h2>
+        <p className="admin-login-subtitle">Sign in to manage entries</p>
 
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <GoogleLogin
-            onSuccess={handleSuccess}
-            onError={() => setError('Login Failed')}
-            theme="filled_blue"
-            shape="pill"
-          />
+        <div className="admin-login-button-wrapper">
+          <button className="btn-google" onClick={() => login()} aria-label="Sign in with Google">
+            <div className="btn-google__icon-wrapper">
+              <svg className="btn-google__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                <path fill="none" d="M0 0h48v48H0z" />
+              </svg>
+            </div>
+            <span className="btn-google__text">Sign in with Google</span>
+          </button>
         </div>
 
-        {error && <p style={{ color: 'var(--danger)', marginTop: '1.5rem' }}>{error}</p>}
+        {error && <p className="admin-login-error">{error}</p>}
       </div>
     </div>
   );
