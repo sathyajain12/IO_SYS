@@ -13,6 +13,12 @@ export default {
             response = await env.ASSETS.fetch(indexUrl);
         }
 
+        // Clone the response so we can modify headers (headers are immutable in standard fetch response)
+        response = new Response(response.body, response);
+
+        // Add Cross-Origin-Opener-Policy to allow popup interaction (Google Login)
+        response.headers.set("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+
         return response;
     }
 };
