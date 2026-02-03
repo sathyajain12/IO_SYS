@@ -1,5 +1,5 @@
 name = "iosys"
-compatibility_date = "2024-02-03"
+compatibility_date = "2026-02-04"
 main = "worker/src/spa.js"
 
 [assets]
