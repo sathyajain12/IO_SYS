@@ -3,7 +3,7 @@ import { outwardAPI, inwardAPI, dashboardAPI } from '../../services/api';
 import {
     Clock, CheckCircle, ArrowRight, AlertCircle, Calendar, Plus, X,
     ClipboardList, Check, FileText, Search, RefreshCw, Eye, Send,
-    ArrowUpFromLine, Hourglass, Loader2, AlertTriangle, Link2
+    ArrowUpFromLine, Hourglass, Loader2, AlertTriangle, Link2, Lock
 } from 'lucide-react';
 import './TeamPortal.css';
 
@@ -30,7 +30,10 @@ function TeamPortal() {
         dueDate: '',
         linkedInwardId: '',
         createdByTeam: '',
-        teamMemberEmail: ''
+        teamMemberEmail: '',
+        ackRec: '',
+        crossNo: '',
+        receiptNo: ''
     });
 
     useEffect(() => {
@@ -126,12 +129,27 @@ function TeamPortal() {
         }
     };
 
+    const handleCloseCase = async (id) => {
+        if (!window.confirm('Are you sure you want to close this case? This will also mark the linked inward entry as completed.')) {
+            return;
+        }
+        try {
+            await outwardAPI.closeCase(id);
+            alert('Case closed successfully!');
+            loadData();
+            setShowDetailsModal(false);
+        } catch (error) {
+            alert('Error closing case: ' + error.message);
+        }
+    };
+
     const resetForm = () => {
         setFormData({
             means: '', toWhom: '', subject: '', sentBy: '',
             signReceiptDateTime: '', caseClosed: false, fileReference: '',
             postalTariff: '', dueDate: '', linkedInwardId: '',
-            createdByTeam: selectedTeam || '', teamMemberEmail: ''
+            createdByTeam: selectedTeam || '', teamMemberEmail: '',
+            ackRec: '', crossNo: '', receiptNo: ''
         });
     };
 
@@ -404,6 +422,28 @@ function TeamPortal() {
                             </div>
                         </div>
 
+                        <div className="grid-2">
+                            <div className="form-group">
+                                <label className="form-label">Ack Rec</label>
+                                <input type="text" name="ackRec" className="form-input"
+                                    value={formData.ackRec} onChange={handleChange}
+                                    placeholder="Acknowledgement received" />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Cross No.</label>
+                                <input type="text" name="crossNo" className="form-input"
+                                    value={formData.crossNo} onChange={handleChange}
+                                    placeholder="Cross reference number" />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Receipt No.</label>
+                            <input type="text" name="receiptNo" className="form-input"
+                                value={formData.receiptNo} onChange={handleChange}
+                                placeholder="Receipt number" />
+                        </div>
+
                         <button type="submit" className="btn btn-primary btn-lg">
                             <Check size={18} /> Create Outward Entry
                         </button>
@@ -449,6 +489,7 @@ function TeamPortal() {
                                     <th>Subject</th>
                                     <th>To</th>
                                     <th>Team</th>
+                                    <th>Status</th>
                                     <th>Linked</th>
                                     <th>Date</th>
                                     <th>Actions</th>
@@ -462,6 +503,13 @@ function TeamPortal() {
                                         <td>{entry.toWhom}</td>
                                         <td><span className="badge badge-team">{entry.createdByTeam}</span></td>
                                         <td>
+                                            {entry.caseClosed ? (
+                                                <span className="badge badge-completed"><Lock size={12} /> Closed</span>
+                                            ) : (
+                                                <span className="badge badge-pending">Open</span>
+                                            )}
+                                        </td>
+                                        <td>
                                             {entry.linkedInwardId ? (
                                                 <span className="badge badge-linked">
                                                     <Link2 size={12} /> Linked
@@ -473,6 +521,11 @@ function TeamPortal() {
                                             <button className="btn-icon" onClick={() => openDetailsModal(entry)} title="View Details">
                                                 <Eye size={16} />
                                             </button>
+                                            {!entry.caseClosed && (
+                                                <button className="btn-icon" onClick={() => handleCloseCase(entry.id)} title="Close Case" style={{ marginLeft: '0.5rem', color: '#10b981' }}>
+                                                    <Lock size={16} />
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
@@ -545,6 +598,11 @@ function TeamPortal() {
                             </div>
                         </div>
                         <div className="modal-footer">
+                            {!selectedEntry.caseClosed && (
+                                <button className="btn btn-primary" onClick={() => handleCloseCase(selectedEntry.id)}>
+                                    <Lock size={16} /> Close Case
+                                </button>
+                            )}
                             <button className="btn btn-secondary" onClick={() => setShowDetailsModal(false)}>Close</button>
                         </div>
                     </div>

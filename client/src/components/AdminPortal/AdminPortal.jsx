@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { inwardAPI, dashboardAPI } from '../../services/api';
+import { inwardAPI, dashboardAPI, outwardAPI } from '../../services/api';
 import {
     Inbox, Plus, ClipboardList, Check, X, Search, Filter,
     Clock, CheckCircle2, AlertCircle, Calendar, Mail, User,
-    FileText, RefreshCw, Eye, Edit3, ArrowDownToLine, Loader2
+    FileText, RefreshCw, Eye, Edit3, ArrowDownToLine, Loader2, Download
 } from 'lucide-react';
 import './AdminPortal.css';
 
@@ -202,12 +202,55 @@ function AdminPortal() {
         return due < new Date();
     };
 
+    const downloadOutwardReport = async () => {
+        try {
+            const res = await outwardAPI.getAll();
+            const entries = res.data.entries;
+
+            // CSV Headers matching the required format
+            const headers = ['Serial No.', 'Ack Rec', 'Cross No.', 'Date', 'File Reference', 'Address', 'Particular', 'Due Date', 'Receipt No.', 'Postal Amount'];
+
+            // Convert entries to CSV rows
+            const rows = entries.map((entry, index) => [
+                index + 1,
+                entry.ackRec || '',
+                entry.crossNo || '',
+                formatDate(entry.signReceiptDateTime),
+                entry.fileReference || '',
+                entry.toWhom || '',
+                entry.subject || '',
+                formatDate(entry.dueDate),
+                entry.receiptNo || '',
+                entry.postalTariff || 0
+            ]);
+
+            // Build CSV content
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+            ].join('\n');
+
+            // Download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Outward_Expenditure_Report_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        } catch (error) {
+            alert('Error downloading report: ' + error.message);
+        }
+    };
+
     return (
         <div className="admin-portal animate-fade">
             {/* Header */}
             <div className="page-header">
                 <h2 className="page-title"><Inbox className="icon-svg" /> Admin Portal</h2>
                 <div className="header-actions">
+                    <button className="btn btn-secondary" onClick={downloadOutwardReport} title="Download Outward Expenditure Report">
+                        <Download size={18} /> Export Report
+                    </button>
                     <button className="btn btn-icon-only" onClick={loadData} disabled={loading} title="Refresh">
                         <RefreshCw size={18} className={loading ? 'spin' : ''} />
                     </button>

@@ -21,7 +21,8 @@ export const inwardAPI = {
 export const outwardAPI = {
     getAll: (team = '') => api.get(`/outward${team ? `?team=${team}` : ''}`),
     create: (data) => api.post('/outward', data),
-    update: (id, data) => api.put(`/outward/${id}`, data)
+    update: (id, data) => api.put(`/outward/${id}`, data),
+    closeCase: (id) => api.put(`/outward/${id}/close`)
 };
 
 // Dashboard API
