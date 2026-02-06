@@ -14,8 +14,8 @@ app.get('/', async (c) => {
     }
 
     const { results } = await db.prepare(
-      'SELECT * FROM messages WHERE to_email = ? ORDER BY created_at DESC LIMIT 50'
-    ).bind(userEmail).all();
+      'SELECT * FROM messages WHERE to_email = ? OR from_email = ? ORDER BY created_at DESC LIMIT 50'
+    ).bind(userEmail, userEmail).all();
 
     const messages = toCamelCase(results);
     return c.json({ success: true, messages });
