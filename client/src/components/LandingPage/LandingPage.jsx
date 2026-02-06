@@ -55,16 +55,16 @@ function LandingPage() {
                 ]);
 
                 if (notifRes.data.success) {
-                    setNotifications(notifRes.data.notifications);
+                    setNotifications(notifRes.data.notifications || []);
                 }
                 if (notifCountRes.data.success) {
-                    setNotificationCount(notifCountRes.data.count);
+                    setNotificationCount(notifCountRes.data.count || 0);
                 }
                 if (msgRes.data.success) {
-                    setMessages(msgRes.data.messages);
+                    setMessages(msgRes.data.messages || []);
                 }
                 if (msgCountRes.data.success) {
-                    setMessageCount(msgCountRes.data.count);
+                    setMessageCount(msgCountRes.data.count || 0);
                 }
             } catch (error) {
                 console.error('Error fetching notifications/messages:', error);
