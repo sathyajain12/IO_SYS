@@ -4,7 +4,6 @@ import inwardRoutes from './routes/inward.js';
 import outwardRoutes from './routes/outward.js';
 import dashboardRoutes from './routes/dashboard.js';
 import notificationsRoutes from './routes/notifications.js';
-import messagesRoutes from './routes/messages.js';
 
 const app = new Hono();
 
@@ -20,7 +19,6 @@ app.route('/api/inward', inwardRoutes);
 app.route('/api/outward', outwardRoutes);
 app.route('/api/dashboard', dashboardRoutes);
 app.route('/api/notifications', notificationsRoutes);
-app.route('/api/messages', messagesRoutes);
 
 // Health check
 app.get('/api/health', (c) => {
