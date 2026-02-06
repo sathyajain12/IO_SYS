@@ -17,6 +17,7 @@
     "hono": "^4.4.0"
   },
   "devDependencies": {
+    "esbuild": "^0.25.0",
     "wrangler": "^3.60.0"
   }
 }
