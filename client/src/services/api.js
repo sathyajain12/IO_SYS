@@ -28,8 +28,26 @@ export const outwardAPI = {
 // Dashboard API
 export const dashboardAPI = {
     getStats: () => api.get('/dashboard/stats'),
-    getTeamStats: (team) => api.get(`/dashboard/team/${team}`),
+    getTeamStats: (team) => api.get(`/dashboard/team/${encodeURIComponent(team)}`),
     getAllTeams: () => api.get('/dashboard/teams')
+};
+
+// Notifications API
+export const notificationsAPI = {
+    getAll: (email) => api.get(`/notifications?email=${encodeURIComponent(email)}`),
+    getUnreadCount: (email) => api.get(`/notifications/unread/count?email=${encodeURIComponent(email)}`),
+    markAsRead: (id) => api.put(`/notifications/${id}/read`),
+    markAllAsRead: (email) => api.put('/notifications/read-all', { userEmail: email }),
+    create: (data) => api.post('/notifications', data)
+};
+
+// Messages API
+export const messagesAPI = {
+    getAll: (email) => api.get(`/messages?email=${encodeURIComponent(email)}`),
+    getUnreadCount: (email) => api.get(`/messages/unread/count?email=${encodeURIComponent(email)}`),
+    markAsRead: (id) => api.put(`/messages/${id}/read`),
+    markAllAsRead: (email) => api.put('/messages/read-all', { userEmail: email }),
+    send: (data) => api.post('/messages', data)
 };
 
 export default api;

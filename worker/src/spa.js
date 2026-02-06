@@ -21,8 +21,8 @@ export default {
         // Clone the response so we can modify headers (headers are immutable in standard fetch response)
         response = new Response(response.body, response);
 
-        // Add Cross-Origin-Opener-Policy to allow popup interaction (Google Login)
-        response.headers.set("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+        // Set COOP to unsafe-none to allow OAuth popups to work properly
+        response.headers.set("Cross-Origin-Opener-Policy", "unsafe-none");
 
         return response;
     }

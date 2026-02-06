@@ -3,11 +3,19 @@ import { Link } from 'react-router-dom';
 import Particles from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 import { Shield, Users, ArrowRight, Bell, Mail, ChevronDown, Moon, Sun } from 'lucide-react';
+import { notificationsAPI, messagesAPI } from '../../services/api';
 import './LandingPage.css';
 
 function LandingPage() {
     const [userPhoto, setUserPhoto] = useState(null);
+    const [userEmail, setUserEmail] = useState('');
     const [isDarkMode, setIsDarkMode] = useState(true);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [showMessages, setShowMessages] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [messages, setMessages] = useState([]);
+    const [notificationCount, setNotificationCount] = useState(0);
+    const [messageCount, setMessageCount] = useState(0);
 
     const particlesInit = useCallback(async engine => {
         await loadSlim(engine);
@@ -20,6 +28,7 @@ function LandingPage() {
             try {
                 const user = JSON.parse(adminUser);
                 setUserPhoto(user.picture);
+                setUserEmail(user.email);
             } catch (e) { console.error(e); }
         }
 
@@ -30,11 +39,82 @@ function LandingPage() {
         }
     }, []);
 
+    // Fetch notifications and messages
+    useEffect(() => {
+        if (!userEmail) return;
+
+        const fetchData = async () => {
+            try {
+                // Fetch notifications
+                const [notifRes, notifCountRes, msgRes, msgCountRes] = await Promise.all([
+                    notificationsAPI.getAll(userEmail),
+                    notificationsAPI.getUnreadCount(userEmail),
+                    messagesAPI.getAll(userEmail),
+                    messagesAPI.getUnreadCount(userEmail)
+                ]);
+
+                if (notifRes.data.success) {
+                    setNotifications(notifRes.data.notifications);
+                }
+                if (notifCountRes.data.success) {
+                    setNotificationCount(notifCountRes.data.count);
+                }
+                if (msgRes.data.success) {
+                    setMessages(msgRes.data.messages);
+                }
+                if (msgCountRes.data.success) {
+                    setMessageCount(msgCountRes.data.count);
+                }
+            } catch (error) {
+                console.error('Error fetching notifications/messages:', error);
+            }
+        };
+
+        fetchData();
+        // Refresh every 30 seconds
+        const interval = setInterval(fetchData, 30000);
+        return () => clearInterval(interval);
+    }, [userEmail]);
+
     useEffect(() => {
         // Sync theme across app
         localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
         document.body.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
     }, [isDarkMode]);
+
+    // Helper function to format time ago
+    const timeAgo = (dateString) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+
+        if (seconds < 60) return 'Just now';
+        if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+        return `${Math.floor(seconds / 86400)} days ago`;
+    };
+
+    // Mark notification as read
+    const handleNotificationClick = async (id) => {
+        try {
+            await notificationsAPI.markAsRead(id);
+            setNotifications(prev => prev.map(n => n.id === id ? {...n, isRead: 1} : n));
+            setNotificationCount(prev => Math.max(0, prev - 1));
+        } catch (error) {
+            console.error('Error marking notification as read:', error);
+        }
+    };
+
+    // Mark message as read
+    const handleMessageClick = async (id) => {
+        try {
+            await messagesAPI.markAsRead(id);
+            setMessages(prev => prev.map(m => m.id === id ? {...m, isRead: 1} : m));
+            setMessageCount(prev => Math.max(0, prev - 1));
+        } catch (error) {
+            console.error('Error marking message as read:', error);
+        }
+    };
 
     return (
         <div className={`space-container ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
@@ -88,14 +168,86 @@ function LandingPage() {
                         {isDarkMode ? <Sun size={20} className="icon-svg" /> : <Moon size={20} className="icon-svg" />}
                     </button>
 
-                    <button className="icon-btn">
-                        <Mail size={20} className="icon-svg" />
-                        <span className="badge-dot">3</span>
-                    </button>
-                    <button className="icon-btn">
-                        <Bell size={20} className="icon-svg" />
-                        <span className="badge-dot orange">5</span>
-                    </button>
+                    <div style={{position: 'relative'}}>
+                        <button className="icon-btn" onClick={() => {setShowMessages(!showMessages); setShowNotifications(false);}}>
+                            <Mail size={20} className="icon-svg" />
+                            {messageCount > 0 && <span className="badge-dot">{messageCount}</span>}
+                        </button>
+                        {showMessages && (
+                            <div className="notification-dropdown">
+                                <div className="dropdown-header">
+                                    <h4>Messages</h4>
+                                    {messageCount > 0 && <span className="badge-count">{messageCount}</span>}
+                                </div>
+                                <div className="dropdown-content">
+                                    {messages.length === 0 ? (
+                                        <div className="notification-item">
+                                            <div style={{width: '100%', textAlign: 'center', opacity: 0.5}}>
+                                                <p className="notification-title">No messages</p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        messages.slice(0, 5).map((msg) => (
+                                            <div
+                                                key={msg.id}
+                                                className={`notification-item ${msg.isRead ? 'read' : 'unread'}`}
+                                                onClick={() => handleMessageClick(msg.id)}
+                                            >
+                                                <Mail size={16} />
+                                                <div>
+                                                    <p className="notification-title">{msg.subject}</p>
+                                                    <p className="notification-time">{timeAgo(msg.createdAt)}</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                                <div className="dropdown-footer">
+                                    <Link to="/messages" className="btn-link">View all messages</Link>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div style={{position: 'relative'}}>
+                        <button className="icon-btn" onClick={() => {setShowNotifications(!showNotifications); setShowMessages(false);}}>
+                            <Bell size={20} className="icon-svg" />
+                            {notificationCount > 0 && <span className="badge-dot orange">{notificationCount}</span>}
+                        </button>
+                        {showNotifications && (
+                            <div className="notification-dropdown">
+                                <div className="dropdown-header">
+                                    <h4>Notifications</h4>
+                                    {notificationCount > 0 && <span className="badge-count orange">{notificationCount}</span>}
+                                </div>
+                                <div className="dropdown-content">
+                                    {notifications.length === 0 ? (
+                                        <div className="notification-item">
+                                            <div style={{width: '100%', textAlign: 'center', opacity: 0.5}}>
+                                                <p className="notification-title">No notifications</p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        notifications.slice(0, 5).map((notif) => (
+                                            <div
+                                                key={notif.id}
+                                                className={`notification-item ${notif.isRead ? 'read' : 'unread'}`}
+                                                onClick={() => handleNotificationClick(notif.id)}
+                                            >
+                                                <Bell size={16} />
+                                                <div>
+                                                    <p className="notification-title">{notif.title}</p>
+                                                    <p className="notification-time">{timeAgo(notif.createdAt)}</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                                <div className="dropdown-footer">
+                                    <Link to="/notifications" className="btn-link">View all notifications</Link>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                     <div className="profile-pill">
                         <img
                             src={userPhoto || "https://ui-avatars.com/api/?name=Admin&background=random"}

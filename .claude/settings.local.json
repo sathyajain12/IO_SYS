@@ -9,7 +9,16 @@
       "Bash(git push)",
       "Bash(git fetch:*)",
       "Bash(git remote:*)",
-      "Bash(powershell -Command \"Invoke-WebRequest -Uri ''https://cdn.brandfetch.io/idMhiVV12f/w/400/h/400/theme/dark/icon.jpeg'' -OutFile ''favicon.ico'' -Headers @{''User-Agent''=''Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36''; ''Referer''=''https://brandfetch.com/''}\")"
+      "Bash(powershell -Command \"Invoke-WebRequest -Uri ''https://cdn.brandfetch.io/idMhiVV12f/w/400/h/400/theme/dark/icon.jpeg'' -OutFile ''favicon.ico'' -Headers @{''User-Agent''=''Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36''; ''Referer''=''https://brandfetch.com/''}\")",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nIncrease landing logo size with proportional scaling\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(npx wrangler d1 execute inward-outward-db --local --file=./migrations/0001_init.sql)",
+      "Bash(curl:*)",
+      "Bash(findstr:*)",
+      "Bash(npx wrangler pages project io-system variables add:*)",
+      "Bash(npx wrangler d1 execute:*)",
+      "Bash(npx wrangler deploy:*)"
     ]
   }
 }
