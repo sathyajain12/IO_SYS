@@ -123,6 +123,13 @@ function TeamPortal() {
         e.preventDefault();
         try {
             await outwardAPI.create(formData);
+
+            // Save user email to localStorage for Messages access
+            if (formData.teamMemberEmail) {
+                const user = { email: formData.teamMemberEmail, type: 'team' };
+                localStorage.setItem('teamUser', JSON.stringify(user));
+            }
+
             alert('Outward entry created successfully!');
             setShowForm(false);
             resetForm();

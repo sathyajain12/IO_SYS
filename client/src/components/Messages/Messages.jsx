@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, User } from 'lucide-react';
 import { messagesAPI } from '../../services/api';
 import MessagesList from './MessagesList';
 import MessageDetail from './MessageDetail';
@@ -19,18 +19,48 @@ function Messages({ userType }) {
     const [userEmail, setUserEmail] = useState('');
     const [composeData, setComposeData] = useState(null);
 
+    // Identity state for team users
+    const [showIdentityModal, setShowIdentityModal] = useState(false);
+    const [identityEmail, setIdentityEmail] = useState('');
+
     // Get user email from localStorage
     useEffect(() => {
-        const adminUser = localStorage.getItem('adminUser');
-        if (adminUser) {
-            try {
-                const user = JSON.parse(adminUser);
-                setUserEmail(user.email);
-            } catch (e) {
-                console.error('Error parsing admin user:', e);
+        const checkAuth = () => {
+            // Check for admin user
+            const adminUser = localStorage.getItem('adminUser');
+            if (adminUser) {
+                try {
+                    const user = JSON.parse(adminUser);
+                    setUserEmail(user.email);
+                    return;
+                } catch (e) {
+                    console.error('Error parsing admin user:', e);
+                }
             }
-        }
-    }, []);
+
+            // Check for team user
+            const teamUser = localStorage.getItem('teamUser');
+            if (teamUser) {
+                try {
+                    const user = JSON.parse(teamUser);
+                    setUserEmail(user.email);
+                    return;
+                } catch (e) {
+                    console.error('Error parsing team user:', e);
+                }
+            }
+
+            // If no user found and not admin portal, show identity modal
+            if (userType === 'team') {
+                setShowIdentityModal(true);
+                setLoading(false);
+            } else {
+                setLoading(false); // Stop loading if admin but not logged in (should be handled by layout/router)
+            }
+        };
+
+        checkAuth();
+    }, [userType]);
 
     // Group messages by subject (conversation threading)
     const groupMessagesBySubject = (msgs) => {
@@ -64,7 +94,10 @@ function Messages({ userType }) {
 
     // Load messages
     const loadMessages = async (showRefreshIndicator = false) => {
-        if (!userEmail) return;
+        if (!userEmail) {
+            if (!showIdentityModal) setLoading(false);
+            return;
+        }
 
         try {
             if (showRefreshIndicator) setRefreshing(true);
@@ -84,9 +117,11 @@ function Messages({ userType }) {
 
     // Auto-refresh every 30 seconds
     useEffect(() => {
-        loadMessages();
-        const interval = setInterval(() => loadMessages(true), 30000);
-        return () => clearInterval(interval);
+        if (userEmail) {
+            loadMessages();
+            const interval = setInterval(() => loadMessages(true), 30000);
+            return () => clearInterval(interval);
+        }
     }, [userEmail]);
 
     // Group into conversations when messages update
@@ -102,6 +137,17 @@ function Messages({ userType }) {
             }
         }
     }, [messages]);
+
+    // Handle identity submit
+    const handleIdentitySubmit = (e) => {
+        e.preventDefault();
+        if (identityEmail && identityEmail.includes('@')) {
+            const user = { email: identityEmail, type: 'team' };
+            localStorage.setItem('teamUser', JSON.stringify(user));
+            setUserEmail(identityEmail);
+            setShowIdentityModal(false);
+        }
+    };
 
     // Handle compose with optional pre-filled data
     const handleCompose = (data = null) => {
@@ -200,6 +246,41 @@ function Messages({ userType }) {
                     }}
                     onSent={handleMessageSent}
                 />
+            )}
+
+            {/* Identity Modal for Team Users */}
+            {showIdentityModal && (
+                <div className="modal-overlay">
+                    <div className="modal" style={{ maxWidth: '400px' }}>
+                        <div className="modal-header">
+                            <h3><User size={20} style={{ marginRight: '8px' }} /> Identify Yourself</h3>
+                        </div>
+                        <form onSubmit={handleIdentitySubmit}>
+                            <div className="modal-body">
+                                <p style={{ marginBottom: '16px', color: 'var(--wa-text-secondary)' }}>
+                                    Please enter your email address to view your team's messages.
+                                </p>
+                                <div className="form-group">
+                                    <label className="form-label">Email Address</label>
+                                    <input
+                                        type="email"
+                                        className="form-input"
+                                        value={identityEmail}
+                                        onChange={(e) => setIdentityEmail(e.target.value)}
+                                        placeholder="your.email@example.com"
+                                        required
+                                        autoFocus
+                                    />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="submit" className="btn btn-primary">
+                                    Continue to Messages
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             )}
         </div>
     );
