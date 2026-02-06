@@ -1,8 +1,14 @@
 {
     "name": "inward-outward-system-root",
     "private": true,
+    "workspaces": [
+        "client",
+        "worker"
+    ],
     "scripts": {
-        "build": "cd client && npm install && npm run build"
+        "build": "npm run build --workspace=client",
+        "build:worker": "npm run deploy --workspace=worker",
+        "install:all": "npm install"
     },
     "engines": {
         "node": "18.x"
