@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { inwardAPI, dashboardAPI, outwardAPI, messagesAPI } from '../../services/api';
+import { inwardAPI, dashboardAPI, outwardAPI } from '../../services/api';
 import {
     Inbox, Plus, ClipboardList, Check, X, Search, Filter,
     Clock, CheckCircle2, AlertCircle, Calendar, Mail, User,
@@ -23,8 +23,7 @@ function AdminPortal() {
         assignedTeam: '',
         assignedToEmail: '',
         assignmentInstructions: '',
-        dueDate: '',
-        sendMessage: false
+        dueDate: ''
     });
     const [formData, setFormData] = useState({
         means: '',
@@ -108,21 +107,6 @@ function AdminPortal() {
         try {
             await inwardAPI.assign(selectedEntry.id, reassignData);
 
-            // Send message if checkbox is checked
-            if (reassignData.sendMessage) {
-                const adminUser = localStorage.getItem('adminUser');
-                const adminEmail = adminUser ? JSON.parse(adminUser).email : '';
-
-                await messagesAPI.send({
-                    fromEmail: adminEmail,
-                    toEmail: reassignData.assignedToEmail,
-                    subject: `Assignment: ${selectedEntry.inwardNo}`,
-                    body: `You have been assigned a new task:\n\nInward No: ${selectedEntry.inwardNo}\nSubject: ${selectedEntry.subject}\n\n${reassignData.assignmentInstructions ? `Instructions: ${reassignData.assignmentInstructions}\n\n` : ''}${reassignData.dueDate ? `Due Date: ${new Date(reassignData.dueDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}\n\n` : ''}Please complete this task at your earliest convenience.`,
-                    relatedType: 'inward',
-                    relatedId: selectedEntry.id
-                });
-            }
-
             alert(`Entry reassigned to ${reassignData.assignedTeam} team!`);
             setShowReassignModal(false);
             setSelectedEntry(null);
@@ -173,8 +157,7 @@ function AdminPortal() {
             assignedTeam: entry.assignedTeam || '',
             assignedToEmail: entry.assignedToEmail || '',
             assignmentInstructions: entry.assignmentInstructions || '',
-            dueDate: entry.dueDate ? formatDateForInput(entry.dueDate) : '',
-            sendMessage: false
+            dueDate: entry.dueDate ? formatDateForInput(entry.dueDate) : ''
         });
         setShowReassignModal(true);
     };
@@ -633,17 +616,7 @@ function AdminPortal() {
                                         placeholder="Updated instructions..." rows={3} />
                                 </div>
 
-                                <div className="form-group">
-                                    <label className="checkbox-label">
-                                        <input
-                                            type="checkbox"
-                                            name="sendMessage"
-                                            checked={reassignData.sendMessage}
-                                            onChange={(e) => setReassignData(prev => ({ ...prev, sendMessage: e.target.checked }))}
-                                        />
-                                        <span>Send notification message to team</span>
-                                    </label>
-                                </div>
+
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" onClick={() => setShowReassignModal(false)}>Cancel</button>
