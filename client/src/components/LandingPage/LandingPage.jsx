@@ -212,7 +212,7 @@ function LandingPage() {
 
             <div className="space-content animate-fade">
                 <div className="space-header">
-                    <img src="/sssihl-icon.jpg" alt="SSSIHL - Inward/Outward System" className="landing-logo" />
+                    <img src="/IO_SYS_LOGO.png" alt="Inward/Outward System" className="landing-logo" />
                     <p>Please select your portal to continue.</p>
                 </div>
 
