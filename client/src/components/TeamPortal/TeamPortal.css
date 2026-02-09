@@ -1,4 +1,4 @@
-/* Team Portal Styles */
+/* Team Portal Styles — Scandinavian Minimal Theme */
 .team-portal {
     width: 100%;
     max-width: 1400px;
@@ -60,52 +60,55 @@
     align-items: center;
     gap: 1rem;
     padding: 1.25rem;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    background: var(--bg-card-elevated);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
+    box-shadow: none;
+    transition: all 120ms ease;
 }
 
 .stat-card:hover {
-    transform: translateY(-2px);
     border-color: rgba(255, 255, 255, 0.15);
 }
 
-/* Glow effects for stat cards in dark mode */
+.stat-card:active {
+    transform: scale(0.98);
+}
+
+/* Stat cards — no glow */
 .stat-card.assignments {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15), 0 0 40px rgba(99, 102, 241, 0.05);
+    box-shadow: none;
 }
 
 .stat-card.assignments:hover {
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.3), 0 0 60px rgba(99, 102, 241, 0.1);
-    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: none;
+    border-color: rgba(var(--primary-rgb), 0.4);
 }
 
 .stat-card.pending {
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.15), 0 0 40px rgba(245, 158, 11, 0.05);
+    box-shadow: none;
 }
 
 .stat-card.pending:hover {
-    box-shadow: 0 0 30px rgba(245, 158, 11, 0.3), 0 0 60px rgba(245, 158, 11, 0.1);
-    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: none;
+    border-color: rgba(212, 147, 10, 0.4);
 }
 
 .stat-card.completed {
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), 0 0 40px rgba(16, 185, 129, 0.05);
+    box-shadow: none;
 }
 
 .stat-card.completed:hover {
-    box-shadow: 0 0 30px rgba(16, 185, 129, 0.3), 0 0 60px rgba(16, 185, 129, 0.1);
-    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: none;
+    border-color: rgba(52, 160, 119, 0.4);
 }
 
 .stat-card.outward {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15), 0 0 40px rgba(59, 130, 246, 0.05);
+    box-shadow: none;
 }
 
 .stat-card.outward:hover {
-    box-shadow: 0 0 30px rgba(59, 130, 246, 0.3), 0 0 60px rgba(59, 130, 246, 0.1);
+    box-shadow: none;
     border-color: rgba(59, 130, 246, 0.4);
 }
 
@@ -118,7 +121,7 @@
 .stat-icon {
     width: 48px;
     height: 48px;
-    border-radius: 12px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -126,18 +129,18 @@
 }
 
 .stat-card.assignments .stat-icon {
-    background: rgba(99, 102, 241, 0.15);
-    color: #818cf8;
+    background: rgba(var(--primary-rgb), 0.15);
+    color: var(--primary);
 }
 
 .stat-card.pending .stat-icon {
-    background: rgba(245, 158, 11, 0.15);
-    color: #f59e0b;
+    background: rgba(212, 147, 10, 0.15);
+    color: #D4930A;
 }
 
 .stat-card.completed .stat-icon {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
+    background: rgba(52, 160, 119, 0.15);
+    color: #34A077;
 }
 
 .stat-card.outward .stat-icon {
@@ -147,7 +150,7 @@
 
 [data-theme="light"] .stat-card.assignments .stat-icon {
     background: #eef2ff;
-    color: #4f46e5;
+    color: var(--primary);
 }
 
 [data-theme="light"] .stat-card.pending .stat-icon {
@@ -183,18 +186,18 @@
 
 /* Cards */
 .card {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-card-elevated);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
+    border-radius: 6px;
     margin-bottom: 1.5rem;
     overflow: hidden;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.03);
-    transition: all 0.3s ease;
+    box-shadow: none;
+    transition: all 120ms ease;
 }
 
 .card:hover {
-    box-shadow: 0 0 25px rgba(99, 102, 241, 0.15), 0 0 50px rgba(99, 102, 241, 0.05);
-    border-color: rgba(99, 102, 241, 0.2);
+    box-shadow: none;
+    border-color: rgba(var(--primary-rgb), 0.2);
 }
 
 [data-theme="light"] .card {
@@ -246,28 +249,31 @@
 }
 
 .assignment-card {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-card-elevated);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    border-radius: 4px;
     padding: 1.25rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.08), 0 0 30px rgba(99, 102, 241, 0.03);
+    transition: all 120ms ease;
+    box-shadow: none;
 }
 
 .assignment-card:hover {
-    border-color: rgba(79, 70, 229, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 0 25px rgba(99, 102, 241, 0.2), 0 0 50px rgba(99, 102, 241, 0.08);
+    border-color: rgba(var(--primary-rgb), 0.3);
+    box-shadow: none;
+}
+
+.assignment-card:active {
+    transform: scale(0.98);
 }
 
 .assignment-card.overdue {
-    border-color: rgba(239, 68, 68, 0.4);
-    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(220, 67, 67, 0.4);
+    background: rgba(220, 67, 67, 0.05);
 }
 
 .assignment-card.due-soon {
-    border-color: rgba(245, 158, 11, 0.4);
-    background: rgba(245, 158, 11, 0.05);
+    border-color: rgba(212, 147, 10, 0.4);
+    background: rgba(212, 147, 10, 0.05);
 }
 
 [data-theme="light"] .assignment-card {
@@ -316,16 +322,16 @@
     align-items: flex-start;
     gap: 0.5rem;
     padding: 0.75rem;
-    background: rgba(79, 70, 229, 0.1);
-    border-radius: 8px;
+    background: rgba(var(--primary-rgb), 0.1);
+    border-radius: 4px;
     font-size: 0.85rem;
-    color: #818cf8;
+    color: var(--primary);
     margin-bottom: 0.75rem;
 }
 
 [data-theme="light"] .assignment-instructions {
     background: #eef2ff;
-    color: #4f46e5;
+    color: var(--primary);
 }
 
 .assignment-meta {
@@ -341,12 +347,12 @@
 }
 
 .due-info.overdue {
-    color: #ef4444;
+    color: #DC4343;
     font-weight: 500;
 }
 
 .due-info.due-soon {
-    color: #f59e0b;
+    color: #D4930A;
     font-weight: 500;
 }
 
@@ -390,12 +396,13 @@
 .form-textarea {
     width: 100%;
     padding: 0.75rem 1rem;
-    border-radius: 10px;
+    border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(0, 0, 0, 0.2);
     color: var(--text-primary);
     font-size: 0.95rem;
-    transition: all 0.2s;
+    transition: all 120ms ease;
+    min-height: 44px;
 }
 
 .form-input:focus,
@@ -403,7 +410,7 @@
 .form-textarea:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
 }
 
 [data-theme="light"] .form-input,
@@ -429,12 +436,12 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.2);
-    border-radius: 10px;
+    background: rgba(52, 160, 119, 0.1);
+    border: 1px solid rgba(52, 160, 119, 0.2);
+    border-radius: 4px;
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
-    color: #10b981;
+    color: #34A077;
 }
 
 [data-theme="light"] .linked-notice {
@@ -456,6 +463,7 @@
     gap: 0.75rem;
     cursor: pointer;
     user-select: none;
+    min-height: 44px;
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -471,43 +479,59 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 0.65rem 1.25rem;
-    border-radius: 10px;
+    border-radius: 4px;
     font-weight: 500;
     font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 120ms ease;
     border: none;
+    min-height: 44px;
+}
+
+.btn:active {
+    transform: scale(0.98);
 }
 
 .btn-sm {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
+    min-height: 44px;
 }
 
 .btn-lg {
     padding: 0.85rem 1.5rem;
     font-size: 1rem;
+    min-height: 44px;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: var(--primary);
     color: white;
-    box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+    box-shadow: none;
 }
 
 .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+    opacity: 0.9;
+    box-shadow: none;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
 }
 
 .btn-secondary {
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    min-height: 44px;
 }
 
 .btn-secondary:hover {
     background: rgba(255, 255, 255, 0.15);
+}
+
+.btn-secondary:active {
+    transform: scale(0.98);
 }
 
 [data-theme="light"] .btn-secondary {
@@ -520,15 +544,20 @@
     padding: 0.65rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: 4px;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 120ms ease;
+    min-height: 44px;
 }
 
 .btn-icon-only:hover {
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
+}
+
+.btn-icon-only:active {
+    transform: scale(0.98);
 }
 
 [data-theme="light"] .btn-icon-only {
@@ -538,17 +567,22 @@
 
 .btn-icon {
     padding: 0.5rem;
-    border-radius: 8px;
+    border-radius: 4px;
     background: rgba(255, 255, 255, 0.05);
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 120ms ease;
+    min-height: 44px;
 }
 
 .btn-icon:hover {
-    background: rgba(79, 70, 229, 0.15);
-    color: #818cf8;
+    background: rgba(var(--primary-rgb), 0.15);
+    color: var(--primary);
+}
+
+.btn-icon:active {
+    transform: scale(0.98);
 }
 
 [data-theme="light"] .btn-icon {
@@ -557,7 +591,7 @@
 
 [data-theme="light"] .btn-icon:hover {
     background: #eef2ff;
-    color: #4f46e5;
+    color: var(--primary);
 }
 
 /* Search Box */
@@ -577,11 +611,12 @@
 .search-box-small .search-input {
     width: 100%;
     padding: 0.6rem 1rem 0.6rem 2.25rem;
-    border-radius: 10px;
+    border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-card-elevated);
     color: var(--text-primary);
     font-size: 0.85rem;
+    min-height: 44px;
 }
 
 [data-theme="light"] .search-box-small .search-input {
@@ -647,25 +682,25 @@
     align-items: center;
     gap: 0.25rem;
     padding: 0.3rem 0.75rem;
-    border-radius: 50px;
+    border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 600;
     white-space: nowrap;
 }
 
 .badge-team {
-    background: rgba(99, 102, 241, 0.15);
-    color: #818cf8;
+    background: rgba(var(--primary-rgb), 0.15);
+    color: var(--primary);
 }
 
 [data-theme="light"] .badge-team {
     background: #eef2ff;
-    color: #4f46e5;
+    color: var(--primary);
 }
 
 .badge-linked {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
+    background: rgba(52, 160, 119, 0.15);
+    color: #34A077;
 }
 
 [data-theme="light"] .badge-linked {
@@ -678,6 +713,7 @@
     padding: 0.5rem 2rem 0.5rem 0.75rem;
     font-size: 0.85rem;
     min-width: 120px;
+    min-height: 44px;
     background-position: right 0.5rem center;
 }
 
@@ -694,7 +730,7 @@
 }
 
 .empty-state.success {
-    color: #10b981;
+    color: #34A077;
 }
 
 .empty-state.success p {
@@ -731,7 +767,6 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -742,18 +777,18 @@
 .modal {
     background: var(--bg-secondary);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
+    border-radius: 6px;
     width: 100%;
     max-width: 550px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 [data-theme="light"] .modal {
     background: white;
     border-color: #e2e8f0;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .modal-header {
@@ -782,13 +817,18 @@
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s;
+    border-radius: 4px;
+    transition: all 120ms ease;
+    min-height: 44px;
 }
 
 .btn-close:hover {
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
+}
+
+.btn-close:active {
+    transform: scale(0.98);
 }
 
 .modal-body {
