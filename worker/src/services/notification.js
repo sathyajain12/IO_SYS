@@ -1,51 +1,47 @@
+import nodemailer from 'nodemailer';
+
 /**
- * Send assignment notification using Resend API
- * Get your API key at https://resend.com
+ * Send assignment notification using Nodemailer (SMTP)
+ * Requires 'nodejs_compat' flag in wrangler.toml
  */
 export async function sendAssignmentNotification(env, entryData) {
-  const { assignedToEmail } = entryData;
+  const { assignedToEmail, subject, inwardNo } = entryData;
 
-  if (!env.EMAIL_API_KEY) {
-    console.log('Email not configured - skipping notification');
-    return { success: true, skipped: true, message: 'Email not configured' };
+  // DEBUG LOGGING
+  console.log('Worker Notification Service called for:', assignedToEmail);
+  console.log('Env keys available:', Object.keys(env));
+
+  if (!env.SMTP_HOST || !env.SMTP_USER) {
+    console.log('SMTP not configured in Worker - logging email content only');
+    return { skipped: true, reason: 'SMTP secrets missing (SMTP_HOST/SMTP_USER)' };
   }
 
   try {
-    const emailHtml = buildEmailHtml(entryData);
-
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${env.EMAIL_API_KEY}`,
-        'Content-Type': 'application/json',
+    const transporter = nodemailer.createTransport({
+      host: env.SMTP_HOST,
+      port: parseInt(env.SMTP_PORT || '587'),
+      secure: env.SMTP_SECURE === 'true',
+      auth: {
+        user: env.SMTP_USER,
+        pass: env.SMTP_PASS,
       },
-      body: JSON.stringify({
-        from: env.EMAIL_FROM || 'Inward/Outward System <noreply@resend.dev>',
-        to: [assignedToEmail],
-        subject: `New Assignment: ${entryData.subject} [${entryData.inwardNo}]`,
-        html: emailHtml,
-      }),
     });
 
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Email API error: ${error}`);
-    }
+    const htmlContent = buildEmailHtml(entryData);
 
-    const result = await response.json();
-    console.log(`Email sent to ${assignedToEmail}:`, result.id);
+    const info = await transporter.sendMail({
+      from: env.EMAIL_FROM || '"Inward/Outward System" <noreply@iosystem.com>',
+      to: assignedToEmail,
+      subject: `New Assignment: ${subject} [${inwardNo}]`,
+      html: htmlContent,
+    });
 
-    return {
-      success: true,
-      emailSent: true,
-      message: `Notification sent to ${assignedToEmail}`
-    };
+    console.log(`Email sent from Worker: ${info.messageId}`);
+    return { success: true, messageId: info.messageId };
+
   } catch (error) {
-    console.error('Notification error:', error.message);
-    return {
-      success: false,
-      message: error.message
-    };
+    console.error('Worker Notification error:', error);
+    return { success: false, error: error.message };
   }
 }
 
@@ -57,8 +53,8 @@ function buildEmailHtml(entryData) {
 
   const formattedDueDate = dueDate
     ? new Date(dueDate).toLocaleDateString('en-IN', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-      })
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    })
     : 'Not specified';
 
   return `

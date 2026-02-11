@@ -92,14 +92,17 @@ router.post('/', async (req, res) => {
         const id = insertedEntry.id;
 
         // Send notification if assigned
+        let notificationResult = { skipped: true, reason: 'Not assigned' };
+
         if (assignedTeam && assignedToEmail) {
             try {
-                await sendAssignmentNotification({
+                notificationResult = await sendAssignmentNotification({
                     id, inwardNo, subject, particularsFromWhom,
                     assignedTeam, assignedToEmail, assignmentInstructions, dueDate
                 });
             } catch (notifyError) {
                 console.error('Notification error:', notifyError);
+                notificationResult = { success: false, error: notifyError.message };
             }
         }
 
@@ -107,7 +110,8 @@ router.post('/', async (req, res) => {
             success: true,
             message: 'Inward entry created successfully',
             id,
-            inwardNo
+            inwardNo,
+            notification: notificationResult
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -149,19 +153,23 @@ router.put('/:id/assign', async (req, res) => {
         if (updateError) throw updateError;
 
         // Send notification
+        let notificationResult = { skipped: true, reason: 'No email key' }; // This initial value might be overwritten
+
         try {
             const entry = toCamelCase(existing);
-            await sendAssignmentNotification({
+            notificationResult = await sendAssignmentNotification({
                 ...entry,
                 assignedTeam, assignedToEmail, assignmentInstructions, dueDate
             });
         } catch (notifyError) {
             console.error('Notification error:', notifyError);
+            notificationResult = { success: false, error: notifyError.message };
         }
 
         res.json({
             success: true,
-            message: `Entry assigned to ${assignedTeam} team. Notification sent to ${assignedToEmail}`
+            message: `Entry assigned to ${assignedTeam} team.`,
+            notification: notificationResult
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

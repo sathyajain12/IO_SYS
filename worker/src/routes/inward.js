@@ -83,14 +83,32 @@ app.post('/', async (c) => {
     const id = result.id;
 
     // Send notification if assigned
-    if (assignedTeam && assignedToEmail && c.env.EMAIL_API_KEY) {
-      try {
-        await sendAssignmentNotification(c.env, {
-          id, inwardNo, subject, particularsFromWhom,
-          assignedTeam, assignedToEmail, assignmentInstructions, dueDate
-        });
-      } catch (notifyError) {
-        console.error('Notification error:', notifyError);
+    // Send notification if assigned
+    let notificationResult = { skipped: true, reason: 'Not assigned to team/email' };
+
+    // DEBUG LOGGING
+    console.log('Checking email trigger:', {
+      assignedTeam,
+      assignedToEmail,
+      hasApiKey: !!c.env.EMAIL_API_KEY
+    });
+
+    if (assignedTeam && assignedToEmail) {
+      if (c.env.EMAIL_API_KEY) {
+        try {
+          console.log('Attempting to send email to:', assignedToEmail);
+          notificationResult = await sendAssignmentNotification(c.env, {
+            id, inwardNo, subject, particularsFromWhom,
+            assignedTeam, assignedToEmail, assignmentInstructions, dueDate
+          });
+          console.log('Email result:', notificationResult);
+        } catch (notifyError) {
+          console.error('Notification error:', notifyError);
+          notificationResult = { success: false, error: notifyError.message };
+        }
+      } else {
+        console.log('EMAIL_API_KEY is missing in env');
+        notificationResult = { skipped: true, reason: 'EMAIL_API_KEY missing' };
       }
     }
 
@@ -98,7 +116,8 @@ app.post('/', async (c) => {
       success: true,
       message: 'Inward entry created successfully',
       id,
-      inwardNo
+      inwardNo,
+      notification: notificationResult
     });
   } catch (error) {
     return c.json({ success: false, message: error.message }, 500);
@@ -140,21 +159,29 @@ app.put('/:id/assign', async (c) => {
     ).run();
 
     // Send notification
+    let notificationResult = { skipped: true, reason: 'EMAIL_API_KEY missing' };
+
     if (c.env.EMAIL_API_KEY) {
       try {
+        console.log('Reassigning: Attempting to send email to:', assignedToEmail);
         const entry = toCamelCase(existing);
-        await sendAssignmentNotification(c.env, {
+        notificationResult = await sendAssignmentNotification(c.env, {
           ...entry,
           assignedTeam, assignedToEmail, assignmentInstructions, dueDate
         });
+        console.log('Reassignment email result:', notificationResult);
       } catch (notifyError) {
         console.error('Notification error:', notifyError);
+        notificationResult = { success: false, error: notifyError.message };
       }
+    } else {
+      console.log('EMAIL_API_KEY is missing in env during reassignment');
     }
 
     return c.json({
       success: true,
-      message: `Entry assigned to ${assignedTeam} team. Notification sent to ${assignedToEmail}`
+      message: `Entry assigned to ${assignedTeam} team.`,
+      notification: notificationResult
     });
   } catch (error) {
     return c.json({ success: false, message: error.message }, 500);

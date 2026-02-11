@@ -1,0 +1,17 @@
+# Environment variables
+.env
+.env.production
+.env.local
+
+# Database
+server.sqlite
+database.sqlite
+
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+
+# Cloudflare
+.wrangler/
