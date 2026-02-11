@@ -367,38 +367,41 @@ function AdminPortal() {
                                         placeholder="Brief description of the correspondence" />
                                 </div>
 
-                                <hr className="divider" />
-                                <h4 className="section-title"><ClipboardList size={20} /> Team Assignment</h4>
+                                <div className="section-block">
+                                    <h4 className="section-title"><ClipboardList size={16} /> Team Assignment</h4>
 
-                                <div className="grid-2">
-                                    <div className="form-group">
-                                        <label className="form-label">Assign to Team *</label>
-                                        <select name="assignedTeam" className="form-select" value={formData.assignedTeam} onChange={handleChange} required>
-                                            <option value="">Select Team...</option>
-                                            <option value="UG">UG Team</option>
-                                            <option value="PG/PRO">PG/PRO Team</option>
-                                            <option value="PhD">PhD Team</option>
-                                        </select>
+                                    <div className="grid-2">
+                                        <div className="form-group">
+                                            <label className="form-label">Assign to Team *</label>
+                                            <select name="assignedTeam" className="form-select" value={formData.assignedTeam} onChange={handleChange} required>
+                                                <option value="">Select Team...</option>
+                                                <option value="UG">UG Team</option>
+                                                <option value="PG/PRO">PG/PRO Team</option>
+                                                <option value="PhD">PhD Team</option>
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Team Leader Email *</label>
+                                            <input type="email" name="assignedToEmail" className="form-input"
+                                                value={formData.assignedToEmail} onChange={handleChange} required
+                                                placeholder="Auto-filled based on team" />
+                                        </div>
                                     </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Team Leader Email *</label>
-                                        <input type="email" name="assignedToEmail" className="form-input"
-                                            value={formData.assignedToEmail} onChange={handleChange} required
-                                            placeholder="Auto-filled based on team" />
+
+                                    <div className="grid-2">
+                                        <div className="form-group">
+                                            <label className="form-label">Due Date</label>
+                                            <input type="date" name="dueDate" className="form-input"
+                                                value={formData.dueDate} onChange={handleChange} />
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="form-group">
-                                    <label className="form-label">Due Date</label>
-                                    <input type="date" name="dueDate" className="form-input"
-                                        value={formData.dueDate} onChange={handleChange} />
-                                </div>
-
-                                <div className="form-group">
-                                    <label className="form-label">Assignment Instructions</label>
-                                    <textarea name="assignmentInstructions" className="form-textarea"
-                                        value={formData.assignmentInstructions} onChange={handleChange}
-                                        placeholder="Special instructions for the team..." rows={3} />
+                                    <div className="form-group">
+                                        <label className="form-label">Assignment Instructions</label>
+                                        <textarea name="assignmentInstructions" className="form-textarea"
+                                            value={formData.assignmentInstructions} onChange={handleChange}
+                                            placeholder="Special instructions for the team..." rows={2} />
+                                    </div>
                                 </div>
                             </div>
                             <div className="modal-footer">
