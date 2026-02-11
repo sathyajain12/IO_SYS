@@ -94,12 +94,28 @@ function AdminPortal() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await inwardAPI.create(formData);
-            alert('Inward entry created successfully!');
+            const response = await inwardAPI.create(formData);
+            console.log('Server Response:', response.data);
+
+            let message = 'Inward entry created successfully!';
+            if (response.data.notification) {
+                if (response.data.notification.success) {
+                    message += ` Email sent to ${formData.assignedToEmail}`;
+                } else if (response.data.notification.skipped) {
+                    message += ` Email skipped: ${response.data.notification.reason}`;
+                    console.warn('Email skipped:', response.data.notification);
+                } else {
+                    message += ` Warning: Email failed - ${response.data.notification.error}`;
+                    console.error('Email failed:', response.data.notification);
+                }
+            }
+
+            alert(message);
             setShowForm(false);
             resetForm();
             loadData();
         } catch (error) {
+            console.error('Error creating entry:', error);
             alert('Error creating entry: ' + error.message);
         }
     };
@@ -107,13 +123,29 @@ function AdminPortal() {
     const handleReassign = async (e) => {
         e.preventDefault();
         try {
-            await inwardAPI.assign(selectedEntry.id, reassignData);
+            const response = await inwardAPI.assign(selectedEntry.id, reassignData);
+            console.log('Reassign Response:', response.data);
 
-            alert(`Entry reassigned to ${reassignData.assignedTeam} team!`);
+            let message = `Entry reassigned to ${reassignData.assignedTeam} team!`;
+
+            if (response.data.notification) {
+                if (response.data.notification.success) {
+                    message += ` Email sent to ${reassignData.assignedToEmail}`;
+                } else if (response.data.notification.skipped) {
+                    message += ` Email skipped: ${response.data.notification.reason}`;
+                    console.warn('Email skipped:', response.data.notification);
+                } else {
+                    message += ` Warning: Email failed - ${response.data.notification.error}`;
+                    console.error('Email failed:', response.data.notification);
+                }
+            }
+
+            alert(message);
             setShowReassignModal(false);
             setSelectedEntry(null);
             loadData();
         } catch (error) {
+            console.error('Error reassigning:', error);
             alert('Error reassigning: ' + error.message);
         }
     };
